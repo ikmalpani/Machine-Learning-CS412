@@ -59,7 +59,7 @@ cmd:option('-threads', 2, 'number of threads')
 -- Data:
 --cmd:option('-size', 'full', 'how many samples do we load: small | full | extra')
 -- Model:
-cmd:option("-architecture", "nn", "type of architecture to construct: hmm | nn")
+cmd:option("-architecture", "nn", "type of architecture to construct: svm | hmm | nn")
 cmd:option("-n_layers", 2, "number of hidden layers (NN only)")
 cmd:option("-n_hidden", 30, "number of hidden nodes per layer (NN only)")
 -- Loss:
@@ -107,7 +107,7 @@ dofile "3-train.lua"
 print("==> Run")
 
 -- Data location
-local data_path = "../data/something"
+local data_path = "../data/<something>"
 
 -- Load data. Function below is defined in "1-data.lua"
 local data, target = load_data(data_path)
