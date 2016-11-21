@@ -119,7 +119,7 @@ local data, target = load_data(data_path)
 -- write your own train function too.
 if opt.architecture == "nn" then
   -- Construct model
-  local model = build_nn(n_inputs, n_layers, n_hidden, opt)
+  local model = build_nn(n_inputs, n_layers, n_hidden, n_output, opt)
 
   -- Train model. We may output more than one variables here.
   local train_result = train_nn(model)
