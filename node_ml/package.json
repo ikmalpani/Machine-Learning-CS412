@@ -1,0 +1,27 @@
+{
+  "name": "genius",
+  "version": "1.0.0",
+  "description": "from skeleton movements to input gestures",
+  "main": "index.js",
+  "dependencies": {
+    "machine_learning": "^0.1.1",
+    "node-svm": "^2.1.8"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "\"echo \\\"Error: no test specified\\\" && exit 1\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "none"
+  },
+  "keywords": [
+    "machine",
+    "learning",
+    "gestures",
+    "window",
+    "manipulation"
+  ],
+  "author": "jillian aurisano",
+  "license": "UNLICENSED"
+}

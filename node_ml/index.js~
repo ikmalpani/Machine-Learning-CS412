@@ -1,0 +1,5 @@
+console.log("hello world")
+
+// index.js
+
+require('./app/index') 
