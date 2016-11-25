@@ -1,0 +1,6 @@
+('linear', 'support vectors for each class: ', array([3604, 3420, 3226, 2862]))
+('linear', ' accuracy= ', 0.8180592991913747)
+('rbf', 'support vectors for each class: ', array([2246, 2134, 5736, 1359]))
+('rbf', ' accuracy= ', 0.9762803234501348)
+('poly', 'support vectors for each class: ', array([523, 941, 967, 339]))
+('poly', ' accuracy= ', 0.9619946091644205)
