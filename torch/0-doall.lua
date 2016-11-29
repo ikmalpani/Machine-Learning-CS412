@@ -31,8 +31,8 @@ DATASET_SIZE = 1
 n_inputs = 124
 
 -- Classes: Gesture/non-gesture
-n_class = 2
-classes = {'1', '0'}
+n_outputs = 4
+classes = {'1', '2','3','4'}
 
 -- k-fold cross-validation
 NUM_FOLDS = 10
@@ -108,7 +108,7 @@ dofile "3-train.lua"
 print("==> Run")
 
 -- Data location
-local data_path = "../data/<something>"
+local data_path = "combine.csv"
 
 -- Load data. Function below is defined in "1-data.lua"
 local data, target = load_data(data_path)
@@ -118,15 +118,44 @@ local data, target = load_data(data_path)
 -- If you want to build a custom model, you can create your own function
 -- in "2-model.lua" or construct it right here. In that case, you may need to 
 -- write your own train function too.
+
+
+n_inputs=#data[1]
 if opt.architecture == "nn" then
   -- Construct model
-  local model,criterion = build_nn(n_inputs, n_layers, n_hidden, n_output)
+  local model,criterion = build_nn(n_inputs, opt, n_output)
 
-  -- Train model. We may output more than one variables here.
-  local train_result = train_nn(model, criterion, opt)
+  -- Split data into 10 subsets
+  -- Create a permutation of indices
+  local indices = randperm(...)
 
-  -- Test model. Again, there may be more than one variables here.
-  local test_result = test_nn(model)
+  -- Assign the indices into num_folds groups
+  local subsets = {}
+  for i = 1, NUM_FOLDS do
+    table.insert(subsets[i], indices[{{ SUBSIZE*(i-1)+1, SUBSIZE*i }}]
+  end
+
+  local train_result, test_result = {}, {}
+  for i = 1, NUM_FOLDS do
+    -- Combine 9 subsets
+    local dataset_train, dataset_test = {}, {}
+    for j = 1, NUM_FOLDS do
+      if j ~= i then
+        for k = 1, SUBSIZE do
+          table.insert(dataset_train, data[ subsets[j][k] ])
+        end
+      end
+    end
+    for k = 1, SUBSIZE do
+      table.insert(dataset_test, data[ subsets[i][k] ])
+    end
+
+    -- Train model. We may output more than one variables here.
+    train_result[i] = train_nn(dataset_train, model, criterion, opt)
+
+    -- Test model. Again, there may be more than one variables here.
+    test_result[i] = test_nn(dataset_test, model)
+  end
 
   -- Last feedbacks to user (graph plot, save model, etc.)
   --...
