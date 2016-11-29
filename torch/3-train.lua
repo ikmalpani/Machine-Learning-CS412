@@ -1,4 +1,11 @@
-function train_nn(dataset_train, model, criterion, opt)
+function train_nn(dataset_train, model, criterion, opt, num_folds)
+	-- Create a permutation of indices
+	local indices = randperm(...)
+
+	-- Assign the indices into num_folds groups
+
+	-- Split the training data into num_folds sub sets
+		
 
 	-- Perform BP training using the model constructed
 	trainer=nn.StochasticGradient(model, criterion)
