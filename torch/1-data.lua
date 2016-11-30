@@ -18,15 +18,12 @@ end
 -------------------------------------------------------------------------------
 -- Load data
 --
-function load_file(file)
-  local curr_size = #data
+function load_data(file)
+  local data, label = {}, {}
+  local curr_size = 0
 
   local f = assert(io.open(file, "r"))
   local line
-
-  -- The first two lines contain no data.
-  f:read()
-  f:read()
 
   -- Read all the way to the last line.
   while true do
@@ -38,19 +35,12 @@ function load_file(file)
       local values = mysplit(line, ",")
 
       -- Data
-      for i = 1, #values do
-        --data[curr_size][1] = tonumber(values[1])
-        if i > 3 then
-          data[curr_size][i-2] = tonumber(values[i])
-        end
+      for i = 1, #values-1 do
+          data[curr_size][i] = tonumber(values[i])
       end
 
       -- Label
-      if values[3] == "free_gestures" then label[curr_size] = 1
-      elseif values[3] == "init_gesture" then label[curr_size] = 2
-      elseif values[3] == "gesture" then label[curr_size] = 3
-      elseif values[3] == "stop_gesture" then label[curr_size] = 4 
-      end
+      label[curr_size] = values[#values]
 
     else break end
   

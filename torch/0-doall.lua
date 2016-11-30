@@ -27,18 +27,14 @@ require "gnuplot"
 -------------------------------------------------------------------------------
 -- Constants.
 --
-DATASET_SIZE = 1
 n_inputs = 124
 
 -- Classes: Gesture/non-gesture
-n_outputs = 4
+n_output = 4
 classes = {'1', '2','3','4'}
 
 -- k-fold cross-validation
 NUM_FOLDS = 10
-
--- Size of each cross-validation subset
-SUB_SIZE = math.floor(DATASET_SIZE / NUM_FOLDS)
 
 -------------------------------------------------------------------------------
 -- Command line inputs
@@ -111,7 +107,7 @@ print("==> Run")
 local data_path = "combine.csv"
 
 -- Load data. Function below is defined in "1-data.lua"
-local data, target = load_data(data_path)
+local data, label = load_data(data_path)
 
 -- Build & train model. Below functions are defined in "2-model.lua" & 
 -- "3-train.lua".
@@ -119,42 +115,48 @@ local data, target = load_data(data_path)
 -- in "2-model.lua" or construct it right here. In that case, you may need to 
 -- write your own train function too.
 
-
-n_inputs=#data[1]
 if opt.architecture == "nn" then
+  -- Number of inputs
+  n_inputs = #data[1]
+
+  -- Size of each cross-validation subset
+  local SUB_SIZE = math.floor(#data / NUM_FOLDS)
+  
   -- Construct model
   local model,criterion = build_nn(n_inputs, opt, n_output)
 
   -- Split data into 10 subsets
   -- Create a permutation of indices
-  local indices = randperm(...)
+  local indices = torch.randperm(#data)
 
-  -- Assign the indices into num_folds groups
-  local subsets = {}
+  -- Assign the indices into 10 groups
+  local subset_idx = {}
   for i = 1, NUM_FOLDS do
-    table.insert(subsets[i], indices[{{ SUBSIZE*(i-1)+1, SUBSIZE*i }}]
+    subset_idx[i] = {}
+    for j = 1, SUB_SIZE do
+      table.insert(subset_idx[i], indices[SUB_SIZE * (i-1) + j])
+    end
   end
 
   local train_result, test_result = {}, {}
-  for i = 1, NUM_FOLDS do
-    -- Combine 9 subsets
-    local dataset_train, dataset_test = {}, {}
-    for j = 1, NUM_FOLDS do
-      if j ~= i then
-        for k = 1, SUBSIZE do
-          table.insert(dataset_train, data[ subsets[j][k] ])
+  for fold = 1, 1 do
+    for i = 1, NUM_FOLDS do
+      if i ~= fold then
+        -- Build input & output
+        local train_set, label_set = {}, {}
+        -- Convert indices to data & label
+        for j = 1, #subset_idx[i] do
+          table.insert(train_set, data[ subset_idx[i][j] ])
+          table.insert(label_set, label[ subset_idx[i][j] ])
         end
+        -- Train model. We may output more than one variables here.
+        model, train_result[i] = train_nn(train_set, label_set, model, criterion, opt)
+        print(train_result[i])
       end
     end
-    for k = 1, SUBSIZE do
-      table.insert(dataset_test, data[ subsets[i][k] ])
-    end
-
-    -- Train model. We may output more than one variables here.
-    train_result[i] = train_nn(dataset_train, model, criterion, opt)
 
     -- Test model. Again, there may be more than one variables here.
-    test_result[i] = test_nn(dataset_test, model)
+    --test_result[i] = test_nn(dataset_test, model)
   end
 
   -- Last feedbacks to user (graph plot, save model, etc.)
@@ -172,7 +174,7 @@ elseif opt.architecture == "hmm" then
 
   -- Last feedbacks to user (graph plot, save model, etc.)
   --...
-
+--]]
 else
   -- Build your own model
   --model = ...
